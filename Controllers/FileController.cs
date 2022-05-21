@@ -28,15 +28,15 @@ namespace Dolittle.FilePackaging.Controllers
         /// <returns></returns>
         [HttpPost(nameof(GetKafkaConfiguration))]
         public IActionResult GetKafkaConfiguration(
-            [Required] List<IFormFile> files, 
+            [Required] List<IFormFile> files,
             [Required] string zipFileName,
             [Required] string solutionName,
             [Required] string environment,
             [Required] string username,
-            [Required] string brokerUrl, 
-            [Required] string inputTopic, 
-            [Required] string commandTopic, 
-            [Required] string receiptsTopic, 
+            [Required] string brokerUrl,
+            [Required] string inputTopic,
+            [Required] string commandTopic,
+            [Required] string receiptsTopic,
             string changeEventsTopic
             )
         {
@@ -49,7 +49,7 @@ namespace Dolittle.FilePackaging.Controllers
             if (string.IsNullOrEmpty(solutionName.Trim()))
                 return BadRequest("Missing solution name");
 
-            if(string.IsNullOrEmpty(environment.Trim()))
+            if (string.IsNullOrEmpty(environment.Trim()))
                 return BadRequest("Environment name missing");
 
             if (string.IsNullOrEmpty(username.Trim()))
@@ -58,7 +58,7 @@ namespace Dolittle.FilePackaging.Controllers
             if (!zipFileName.EndsWith(".zip", StringComparison.InvariantCultureIgnoreCase))
                 zipFileName += ".zip";
 
-            foreach(var requiredFile in REQUIRED_FILES)
+            foreach (var requiredFile in REQUIRED_FILES)
             {
                 if (!files.Any(file => file.FileName.Equals(requiredFile, StringComparison.InvariantCultureIgnoreCase)))
                     return BadRequest($"File '{requiredFile}' is missing");
@@ -79,7 +79,9 @@ namespace Dolittle.FilePackaging.Controllers
                     using (var readmeEntryStream = configurationBuilder.Open())
                     using (var streamWriter = new StreamWriter(readmeEntryStream))
                     {
-                        streamWriter.Write(System.IO.File.ReadAllText("Content/KafkaConfigurationBuilder.cs"));
+                        var codeFileContents = System.IO.File.ReadAllText("Content/KafkaConfigurationBuilder.cs");
+                        codeFileContents = codeFileContents.Replace("$(solutionName)", Capitalize(solutionName));
+                        streamWriter.Write(codeFileContents);
                     }
 
                     foreach (var file in files)
@@ -94,7 +96,15 @@ namespace Dolittle.FilePackaging.Controllers
                 zipStream.Position = 0;
                 return File(zipStream.GetBuffer(), "application/zip", zipFileName);
             }
-}
+        }
+
+        string Capitalize(string data)
+        {
+            if (data.Length < 2)
+                return data.ToUpper();
+
+            return $"{char.ToUpper(data[0])}{data.Substring(1).ToLower()}";
+        }
 
         string BuildInstructions(string brokerUrl, string inputTopic, string commandTopic, string receiptsTopic, string changeEventsTopic, string solutionName, string environment, string username)
         {

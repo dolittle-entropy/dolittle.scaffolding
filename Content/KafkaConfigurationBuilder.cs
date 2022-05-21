@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using System.Text;
 
-namespace Messaging
+namespace $(solutionName).Messaging
 {
     /// <summary>
     /// Needs a reference to package <see cref="Confluent.Kafka"/> from Nuget.org
