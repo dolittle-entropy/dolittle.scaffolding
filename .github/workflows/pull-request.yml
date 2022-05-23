@@ -21,7 +21,7 @@ jobs:
       - name: Install tools to generate test report
         run: |
           dotnet tool install --global coverlet.console
-          dotnet add package coverlet.msbuild
+          dotnet add Dolittle.Scaffold.Test/Dolittle.Scaffold.Test.csproj package coverlet.msbuild
 
       - name: Install dependencies
         run: dotnet restore
