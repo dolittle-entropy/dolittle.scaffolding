@@ -41,6 +41,7 @@ jobs:
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=coverage /p:Exclude=[xunit.*]* ./Dolittle.Scaffolding.sln
           mkdir coverage && mv ./Dolittle.Scaffolding.Tests/coverage.info coverage/lcov.info
+          cat coverage/lcov.info
       
       - name: Send test report result to code climate
         run: ./codeclimate-test-reporter after-build -t lcov -r ${CC_TEST_REPORTER_ID} -p ./ --exit-code $?
