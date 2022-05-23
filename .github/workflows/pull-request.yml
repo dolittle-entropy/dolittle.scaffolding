@@ -51,4 +51,5 @@ jobs:
           push: true
           context: "."
           file: ./Dockerfile
-          tags: dolittle/platform-api:${{ github.head_ref }}
+          # todo: semver
+          tags: dolittle/scaffolding:${{ github.head_ref }}
