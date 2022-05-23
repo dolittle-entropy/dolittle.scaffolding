@@ -2,6 +2,9 @@ name: Pull request build and push
 
 on: pull_request
 
+env:
+  DOCKER_IMAGE_NAME: dolittle/scaffolding
+
 jobs:
   pull-request:
     runs-on: ubuntu-latest
@@ -52,4 +55,4 @@ jobs:
           context: "."
           file: ./Dockerfile
           # todo: semver
-          tags: dolittle/scaffolding:${{ github.head_ref }}
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.head_ref }}
