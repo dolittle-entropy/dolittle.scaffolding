@@ -43,7 +43,7 @@ jobs:
           mkdir coverage && mv ./Dolittle.Scaffolding.Tests/coverage.info coverage/lcov.info
       
       - name: Send test report result to code climate
-        run: ./codeclimate-test-reporter after-build -t lcov -r ${CC_TEST_REPORTER_ID} -p ./ --exit-code $?
+        run: ./codeclimate-test-reporter after-build -t lcov -r ${CC_TEST_REPORTER_ID} -p ./Dolittle.Scaffolding.Tests --exit-code $?
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
