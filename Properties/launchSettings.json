@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Dolittle.FilePackaging": {
+    "Dolittle.Scaffolding": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

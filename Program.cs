@@ -9,7 +9,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Version = "v1",
-        Title = "Dolittle File Packaging API", 
+        Title = "Dolittle Scaffolding API", 
         Description = "Helper API for the delivery of files, scaffolded code and other things",
     });
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";

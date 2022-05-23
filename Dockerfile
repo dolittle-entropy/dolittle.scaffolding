@@ -7,16 +7,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Dolittle.FilePackaging.csproj", "."]
-RUN dotnet restore "./Dolittle.FilePackaging.csproj"
+COPY ["Dolittle.Scaffolding.csproj", "."]
+RUN dotnet restore "./Dolittle.Scaffolding.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "Dolittle.FilePackaging.csproj" -c Release -o /app/build
+RUN dotnet build "Dolittle.Scaffolding.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Dolittle.FilePackaging.csproj" -c Release -o /app/publish
+RUN dotnet publish "Dolittle.Scaffolding.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Dolittle.FilePackaging.dll"]
+ENTRYPOINT ["dotnet", "Dolittle.Scaffolding.dll"]

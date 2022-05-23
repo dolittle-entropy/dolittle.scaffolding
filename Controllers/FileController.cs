@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
 using System.Reflection;
 
-namespace Dolittle.FilePackaging.Controllers
+namespace DolittleScaffolding.Controllers
 {
     [Route("api/[controller]"), ApiController]
     public class FileController : ControllerBase
