@@ -1,0 +1,80 @@
+name: Pull request build and push
+
+on: pull_request
+
+env:
+  DOCKER_IMAGE_NAME: dolittle/scaffolding
+
+jobs:
+  pull-request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '7.0.x'
+          include-prerelease: true
+
+      #- name: Install code climate test reporter
+      #  run: |
+      #    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./codeclimate-test-reporter
+      #    chmod +x ./codeclimate-test-reporter
+
+      #- name: Install tools to generate test report
+      #  run: |
+      #    dotnet tool install --global coverlet.console
+      #    dotnet add Dolittle.Scaffolding.Tests/Dolittle.Scaffolding.Tests.csproj package coverlet.msbuild
+
+      #- name: Start code climate process
+      #  run: ./codeclimate-test-reporter before-build
+
+      - name: Install dependencies
+        run: dotnet restore
+      
+      - name: Build
+        run: dotnet build
+        
+      - name: Test with the dotnet CLI
+        run: |
+          #dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:CoverletOutput=coverage /p:Exclude=[xunit.*]* ./Dolittle.Scaffolding.sln
+          #mkdir coverage && mv ./Dolittle.Scaffolding.Tests/coverage.info coverage/lcov.info
+          dotnet test
+      
+      #- name: Send test report result to code climate
+      #  run: ./codeclimate-test-reporter after-build -t lcov -r ${CC_TEST_REPORTER_ID} -p ./Dolittle.Scaffolding.Tests --exit-code $?
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      #- name: Install Code Climate
+      #  working-directory: ${{ env.SOURCE_PATH }}
+      #  run: |
+      #    curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-0.10.1-linux-amd64 > ./cc-test-reporter
+      #    chmod +x ./cc-test-reporter
+
+      #- name: Report code coverage to Code Climate
+      #  working-directory: ${{ env.SOURCE_PATH }}
+      #  run: |
+      #    ./cc-test-reporter format-coverage output/test-codecoverage.cov -t gocov -o output/test-codecoverage-codeclimate.json -p github.com/dolittle/platform-api
+      #    CC_TEST_REPORTER_ID=${{ secrets.CC_TEST_REPORTER_ID }} \
+      #    GIT_BRANCH=${{ env.GITHUB_REF }} \
+      #    GIT_COMMIT=${{ env.GITHUB_SHA }} \
+      #    ./cc-test-reporter \
+      #    upload-coverage -i output/test-codecoverage-codeclimate.json
+
+      - name: Push PR Docker image
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          context: "."
+          file: ./Dockerfile
+          # todo: semver
+          tags: ${{ env.DOCKER_IMAGE_NAME }}:${{ github.head_ref }}
