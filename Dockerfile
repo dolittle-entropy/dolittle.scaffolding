@@ -7,9 +7,9 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Dolittle.Scaffolding.csproj", "."]
+COPY ["Dolittle.Scaffolding/Dolittle.Scaffolding.csproj", "."]
 RUN dotnet restore "./Dolittle.Scaffolding.csproj"
-COPY . .
+COPY Dolittle.Scaffolding .
 WORKDIR "/src/."
 RUN dotnet build "Dolittle.Scaffolding.csproj" -c Release -o /app/build
 
