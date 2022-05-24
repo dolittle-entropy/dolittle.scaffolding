@@ -26,7 +26,7 @@ $(config)
 ```
 
 > **Important** <br />
-> Ensure that the `GroupId` is a value with no spaces (replace spashes with dashes)
+> Ensure that the `GroupId` is a value with no spaces (replace spaces with dashes)
 
 
 
