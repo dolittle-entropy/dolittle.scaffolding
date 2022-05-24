@@ -18,19 +18,21 @@ Instead, copy them to a safe location on your disk, i.e. next to your `secrets.j
 
 ### 3. Create a Kafka section in your `secrets.json` file
 
-#### 3.1 Copy the configuration section and paste it into your `secrets.json`
-Start by copying the configuration section named "Kafka" into your `secrets.json` file. These values have been pre-filled from the Dolittle Portal
+#### **3.1 Copy the configuration section and paste it into your `secrets.json`**
+Start by copying the configuration section named "Kafka" into your `secrets.json` file. 
+These values have been pre-filled with values from the Dolittle Portal. 
+Paste the `Kafka` configuration section as a child of the root json structure. 
 
 ```json
 $(config)
 ```
 
 > **Important** <br />
-> Ensure that the `GroupId` is a value with no spaces (replace spaces with dashes)
+> Look over the configuration to ensure that things like the `GroupId` have no spaces (replace spaces with dashes)
 
 
 
-Finally, replace the `<path>` under the `Ssl` section with your true path, i.e:
+#### **3.2 Replace the `<path>` under the `Ssl` section with your true path, i.e:**
 
 ```json
 "Ssl": {
@@ -41,7 +43,9 @@ Finally, replace the `<path>` under the `Ssl` section with your true path, i.e:
 ```
 
 ### 4. (Optional) Copy the file `KafkaConfigurationBuilder.cs` into your project
-Simply copy the file, adjust its namespace and read through the comments to be able to quickly create kafka consumers and publishers.
+Copy the file into your project, adjust its namespace and read through the comments to be able to quickly create kafka consumers and publishers.
+The `KafkaConfigurationBuilder` is a static class that leverages the configuration section from the `secrets.json` directly, allowing you to 
+quickly set up publishers and consumers.
 
 ----
 End of README.md
