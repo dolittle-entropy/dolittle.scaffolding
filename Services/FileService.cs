@@ -33,7 +33,6 @@ namespace Dolittle.Scaffolding.Services
                     {
                         streamWriter.Write(BuildInstructions(brokerUrl, inputTopic, commandTopic, receiptsTopic, changeEventsTopic, solutionName, environment, username));
                     }
-
                     var configurationBuilder = archive.CreateEntry("KafkaConfigurationBuilder.cs");
                     using (var readmeEntryStream = configurationBuilder.Open())
                     using (var streamWriter = new StreamWriter(readmeEntryStream))
@@ -42,18 +41,17 @@ namespace Dolittle.Scaffolding.Services
                         codeFileContents = codeFileContents.Replace("$(solutionName)", Capitalize(solutionName));
                         streamWriter.Write(codeFileContents);
                     }
-
-                    foreach (var file in files)
+                    files.ForEach(file =>
                     {
                         var zipEntry = archive.CreateEntry(file.FileName);
                         using (var entryStream = zipEntry.Open())
                         {
                             file.CopyTo(entryStream);
                         }
-                    }
+                    });
                 }
                 zipStream.Position = 0;
-                return new FileContentResult(zipStream.GetBuffer(), "application/zip"); // , zipFileName);
+                return new FileContentResult(zipStream.GetBuffer(), "application/zip");
             }
         }
 
