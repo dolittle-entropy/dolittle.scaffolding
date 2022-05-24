@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 
@@ -9,15 +12,15 @@ namespace Dolittle.Scaffolding.Services
     public class FileService : IFileService
     {
         public FileContentResult BuildKafkaConfiguration(
-            [Required] List<IFormFile> files, 
-            [Required] string zipFileName, 
-            [Required] string solutionName, 
-            [Required] string environment, 
-            [Required] string username, 
-            [Required] string brokerUrl, 
-            [Required] string inputTopic, 
-            [Required] string commandTopic, 
-            [Required] string receiptsTopic, 
+            [Required] List<IFormFile> files,
+            [Required] string zipFileName,
+            [Required] string solutionName,
+            [Required] string environment,
+            [Required] string username,
+            [Required] string brokerUrl,
+            [Required] string inputTopic,
+            [Required] string commandTopic,
+            [Required] string receiptsTopic,
             string changeEventsTopic)
         {
             using (var zipStream = new MemoryStream())

@@ -1,10 +1,11 @@
 ﻿using Dolittle.Scaffolding.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.IO.Compression;
-using System.Reflection;
+using System.Linq;
 
 namespace DolittleScaffolding.Controllers
 {
@@ -12,7 +13,7 @@ namespace DolittleScaffolding.Controllers
     public class FileController : ControllerBase
     {
         static string[] REQUIRED_FILES = new[] { "accessKey.pem", "certificate.pem", "ca.pem" };
-        private readonly IFileService _fileService;
+        readonly IFileService _fileService;
 
         public FileController(IFileService fileService)
         {
@@ -61,7 +62,7 @@ namespace DolittleScaffolding.Controllers
 
             if (string.IsNullOrEmpty(username.Trim()))
                 return BadRequest("Missing username");
-            
+
             foreach (var requiredFile in REQUIRED_FILES)
             {
                 if (!files.Any(file => file.FileName.Equals(requiredFile, StringComparison.InvariantCultureIgnoreCase)))
@@ -76,7 +77,7 @@ namespace DolittleScaffolding.Controllers
                 var result = _fileService.BuildKafkaConfiguration(files, zipFileName, solutionName, environment, username, brokerUrl, inputTopic, commandTopic, receiptsTopic, changeEventsTopic);
                 return File(result.FileContents, result.ContentType, zipFileName);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
