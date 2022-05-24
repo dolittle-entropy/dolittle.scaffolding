@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dolittle.Scaffolding.Services;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +12,12 @@ namespace DolittleScaffolding.Controllers
     public class FileController : ControllerBase
     {
         static string[] REQUIRED_FILES = new[] { "accessKey.pem", "certificate.pem", "ca.pem" };
+        private readonly IFileService _fileService;
+
+        public FileController(IFileService fileService)
+        {
+            _fileService = fileService;
+        }
 
         /// <summary>
         /// Scaffold a Kafka configuration environment for the developer and produce a downloadable Zip file with everything they need
@@ -54,74 +61,25 @@ namespace DolittleScaffolding.Controllers
 
             if (string.IsNullOrEmpty(username.Trim()))
                 return BadRequest("Missing username");
-
-            if (!zipFileName.EndsWith(".zip", StringComparison.InvariantCultureIgnoreCase))
-                zipFileName += ".zip";
-
+            
             foreach (var requiredFile in REQUIRED_FILES)
             {
                 if (!files.Any(file => file.FileName.Equals(requiredFile, StringComparison.InvariantCultureIgnoreCase)))
                     return BadRequest($"File '{requiredFile}' is missing");
             }
 
-            using (var zipStream = new MemoryStream())
+            if (!zipFileName.EndsWith(".zip", StringComparison.InvariantCultureIgnoreCase))
+                zipFileName += ".zip";
+
+            try
             {
-                using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create, true))
-                {
-                    var readmeEntry = archive.CreateEntry("README.md");
-                    using (var readmeEntryStream = readmeEntry.Open())
-                    using (var streamWriter = new StreamWriter(readmeEntryStream))
-                    {
-                        streamWriter.Write(BuildInstructions(brokerUrl, inputTopic, commandTopic, receiptsTopic, changeEventsTopic, solutionName, environment, username));
-                    }
-
-                    var configurationBuilder = archive.CreateEntry("KafkaConfigurationBuilder.cs");
-                    using (var readmeEntryStream = configurationBuilder.Open())
-                    using (var streamWriter = new StreamWriter(readmeEntryStream))
-                    {
-                        var codeFileContents = System.IO.File.ReadAllText("Content/KafkaConfigurationBuilder.cs");
-                        codeFileContents = codeFileContents.Replace("$(solutionName)", Capitalize(solutionName));
-                        streamWriter.Write(codeFileContents);
-                    }
-
-                    foreach (var file in files)
-                    {
-                        var zipEntry = archive.CreateEntry(file.FileName);
-                        using (var entryStream = zipEntry.Open())
-                        {
-                            file.CopyTo(entryStream);
-                        }
-                    }
-                }
-                zipStream.Position = 0;
-                return File(zipStream.GetBuffer(), "application/zip", zipFileName);
+                var result = _fileService.BuildKafkaConfiguration(files, zipFileName, solutionName, environment, username, brokerUrl, inputTopic, commandTopic, receiptsTopic, changeEventsTopic);
+                return File(result.FileContents, result.ContentType, zipFileName);
             }
-        }
-
-        string Capitalize(string data)
-        {
-            if (data.Length < 2)
-                return data.ToUpper();
-
-            return $"{char.ToUpper(data[0])}{data.Substring(1).ToLower()}";
-        }
-
-        string BuildInstructions(string brokerUrl, string inputTopic, string commandTopic, string receiptsTopic, string changeEventsTopic, string solutionName, string environment, string username)
-        {
-            var configuration = new KafkaConfiguration(
-                new Kafka(
-                    $"{solutionName}-{environment}-{username}",
-                    brokerUrl,
-                    inputTopic,
-                    commandTopic,
-                    receiptsTopic,
-                    changeEventsTopic,
-                    new Ssl("<path>/ca.pem", "<path>/certificate.pem", "<path>/accessKey.pem")
-                ));
-            var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().FullName!);
-            var filePath = Path.Combine(fileInfo.DirectoryName!, "Content/README.md");
-            var instructions = System.IO.File.ReadAllText(filePath);
-            return instructions.Replace("$(config)", JsonConvert.SerializeObject(configuration, Formatting.Indented));
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
