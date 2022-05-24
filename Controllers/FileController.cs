@@ -118,8 +118,8 @@ namespace DolittleScaffolding.Controllers
                     changeEventsTopic,
                     new Ssl("<path>/ca.pem", "<path>/certificate.pem", "<path>/accessKey.pem")
                 ));
-            var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().FullName);
-            var filePath = Path.Combine(fileInfo.DirectoryName, "Content/README.md");
+            var fileInfo = new FileInfo(Assembly.GetExecutingAssembly().FullName!);
+            var filePath = Path.Combine(fileInfo.DirectoryName!, "Content/README.md");
             var instructions = System.IO.File.ReadAllText(filePath);
             return instructions.Replace("$(config)", JsonConvert.SerializeObject(configuration, Formatting.Indented));
         }
