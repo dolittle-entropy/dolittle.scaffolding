@@ -100,9 +100,10 @@ namespace $(solutionName).Messaging
         /// It is recommended that each microservice identifies itself by name by applying an 
         /// ENVIRONMENT variable to your launchsettings file named "KAFKA__GROUP" 
         /// This will expand your group Id to look something like: 
-        ///     solutionName-dev-jonnydangerous-orders         /// </summary>
+        ///     solutionName-dev-jonnydangerous-orders         
+        /// </summary>
         /// <param name="groupId">Typically, the current microservice name</param>
-        /// <returns></returns>
+        /// <returns>groupid with microservice name appended, or just the groupId if the ENV variable was not set</returns>
         static string EnsureProperGroupId(string groupId)
         {
             if (Environment.GetEnvironmentVariable("KAFKA__GROUP") is { } groupIdAdd)
