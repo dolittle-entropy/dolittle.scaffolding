@@ -49,7 +49,7 @@ namespace $(solutionName).Messaging
             };
         }
 
-        private static void DisplayConfigurationValuesForKafka(IConfigurationSection kafka, string groupId, string variant, ILogger log)
+        static void DisplayConfigurationValuesForKafka(IConfigurationSection kafka, string groupId, string variant, ILogger log)
         {
             var stringBuilder = new StringBuilder(2048);
             stringBuilder.AppendLine($"Kafka {variant} Environment values:");
@@ -103,7 +103,7 @@ namespace $(solutionName).Messaging
         ///     solutionName-dev-jonnydangerous-orders         /// </summary>
         /// <param name="groupId">Typically, the current microservice name</param>
         /// <returns></returns>
-        private static string EnsureProperGroupId(string groupId)
+        static string EnsureProperGroupId(string groupId)
         {
             if (Environment.GetEnvironmentVariable("KAFKA__GROUP") is { } groupIdAdd)
             {
